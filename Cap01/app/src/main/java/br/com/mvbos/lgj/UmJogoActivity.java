@@ -140,6 +140,9 @@ public class UmJogoActivity extends Activity {
         }
 
         public void onTouch(MotionEvent event) {
+            if (fimDeJogo)
+                return;
+
             int action = event.getActionMasked();
 
             if (action == MotionEvent.ACTION_UP) {
