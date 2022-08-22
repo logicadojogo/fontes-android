@@ -22,6 +22,9 @@ class JogoView extends View {
 
     private static final int FPS = 1000 / 20;
 
+    //Controle do loop do jogo
+    private long prxAtualizacao = 0;
+
     // Elementos do jogo
     private int vidas = 3;
 
@@ -152,9 +155,6 @@ class JogoView extends View {
         totalInimigos = invasores.length * invasores[0].length;
         contadorEspera = totalInimigos / level;
     }
-
-    //Iniciar jogo
-    long prxAtualizacao = 0;
 
     @Override
     protected void onDraw(Canvas canvas) {
