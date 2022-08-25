@@ -8,15 +8,15 @@ public abstract class CenarioPadrao {
 
     protected int altura, largura;
 
-    protected Elemento elClique;
+    protected Elemento elToque;
 
     protected PointF movimento = new PointF();
 
     public CenarioPadrao(int largura, int altura) {
         this.altura = altura;
         this.largura = largura;
-        elClique = new Elemento(0, 0, 5, 5);
-        elClique.setAtivo(true);
+        elToque = new Elemento(0, 0, 5, 5);
+        elToque.setAtivo(true);
     }
 
     public abstract void carregar();
@@ -28,13 +28,13 @@ public abstract class CenarioPadrao {
     public abstract void desenhar(Canvas g, Paint p);
 
     public void onToque(float x, float y) {
-        elClique.setPx((int) x);
-        elClique.setPy((int) y);
+        elToque.setPx((int) x);
+        elToque.setPy((int) y);
     }
 
     public void onToqueLiberar(float x, float y) {
-        elClique.setPx((int) x);
-        elClique.setPy((int) y);
+        elToque.setPx((int) x);
+        elToque.setPy((int) y);
     }
 
     public void onMovimentar(float x, float y) {

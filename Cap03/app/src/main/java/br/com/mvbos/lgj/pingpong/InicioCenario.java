@@ -68,12 +68,12 @@ public class InicioCenario extends CenarioPadrao {
     public void atualizar() {
         if (JogoView.controleTecla[JogoView.Tecla.BA.ordinal()]) {
 
-            if (Util.colide(elClique, menuModo)) {
+            if (Util.colide(elToque, menuModo)) {
                 menuModo.setSelecionado(true);
                 menuVeloc.setSelecionado(false);
                 menuModo.trocaOpcao(true);
 
-            } else if (Util.colide(elClique, menuVeloc)) {
+            } else if (Util.colide(elToque, menuVeloc)) {
                 menuModo.setSelecionado(false);
                 menuVeloc.setSelecionado(true);
                 menuVeloc.trocaOpcao(true);
@@ -87,7 +87,7 @@ public class InicioCenario extends CenarioPadrao {
                 } else {
                     bola.setVel(Bola.VEL_INICIAL / 2);
                 }
-            } else if (Util.colide(elClique, menuIniciar)) {
+            } else if (Util.colide(elToque, menuIniciar)) {
                 JogoView.mudarCena = true;
             }
 

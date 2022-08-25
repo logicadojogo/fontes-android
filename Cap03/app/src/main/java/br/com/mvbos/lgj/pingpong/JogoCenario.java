@@ -68,13 +68,13 @@ public class JogoCenario extends CenarioPadrao {
 
         esquerda.setVel(5);
         esquerda.setAltura(70);
-        esquerda.setLargura(5);
+        esquerda.setLargura(10);
         esquerda.setCor(Color.WHITE);
 
-        direita.setVel(5);
-        direita.setAltura(70);
-        direita.setLargura(5);
-        direita.setCor(Color.WHITE);
+        direita.setVel(esquerda.getVel());
+        direita.setAltura(esquerda.getAltura());
+        direita.setLargura(esquerda.getLargura());
+        direita.setCor(esquerda.getCor());
         direita.setPx(largura - direita.getLargura());
 
         areaPausa.setAltura(altura);
@@ -116,13 +116,13 @@ public class JogoCenario extends CenarioPadrao {
     @Override
     public void onToque(float x, float y) {
         super.onToque(x, y);
-        if (Util.colide(elClique, areaPausa)) {
+        if (Util.colide(elToque, areaPausa)) {
             // Toque no centro pausa o jogo
             JogoView.pausado = !JogoView.pausado;
-        } else if (Util.colide(elClique, esquerda)) {
+        } else if (Util.colide(elToque, esquerda)) {
             // Toque no jogador da esquerda ativoa botao A
             JogoView.controleTecla[JogoView.Tecla.BA.ordinal()] = true;
-        } else if (Util.colide(elClique, direita)) {
+        } else if (Util.colide(elToque, direita)) {
             // Toque no jogador da direita ativoa botao B
             JogoView.controleTecla[JogoView.Tecla.BB.ordinal()] = true;
         }
@@ -147,9 +147,9 @@ public class JogoCenario extends CenarioPadrao {
         bola.incPy();
 
         if (JogoView.controleTecla[JogoView.Tecla.BA.ordinal()]) {
-            esquerda.setPy((int) movimento.y);
+            esquerda.setPy((int) movimento.y - esquerda.getAltura() / 2);
         } else if (JogoView.controleTecla[JogoView.Tecla.BB.ordinal()]) {
-            direita.setPy((int) movimento.y);
+            direita.setPy((int) movimento.y - direita.getAltura() / 2);
         }
 
         validaPosicao(esquerda);
@@ -216,6 +216,7 @@ public class JogoCenario extends CenarioPadrao {
             int tempY = altura / 2 + TAMANHO_FONTE / 2;
             textoPausa.desenha(g, p, "PAUSA", tempX, tempY);
         }
+
     }
 
     private boolean validaColisao(Bola b) {

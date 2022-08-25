@@ -4,15 +4,18 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 
 import br.com.mvbos.lgj.base.CenarioPadrao;
+import br.com.mvbos.lgj.base.EscalaUtil;
 import br.com.mvbos.lgj.pingpong.InicioCenario;
 import br.com.mvbos.lgj.pingpong.JogoCenario;
 
 
 public class JogoView extends View {
+
 
     public enum Tecla {
         BA, BB
@@ -21,9 +24,15 @@ public class JogoView extends View {
     //Controle do loop do jogo
     private long prxAtualizacao;
 
-    private int larguraTela;
+    private final int larguraTela;
 
-    private int alturaTela;
+    private final int alturaTela;
+
+    private final int larguraCena;
+
+    private final int alturaCena;
+
+    private EscalaUtil escala = new EscalaUtil();
 
     private CenarioPadrao cenario;
 
@@ -49,12 +58,16 @@ public class JogoView extends View {
 
     public JogoView(Context context, int larguraTela, int alturaTela) {
         super(context);
+        /* jogo feito para uma tela de  480x320 */
+        this.larguraCena = 480;
+        this.alturaCena = 320;
         this.larguraTela = larguraTela;
         this.alturaTela = alturaTela;
+        this.escala.configure(larguraTela, alturaTela, larguraCena, alturaCena);
     }
 
     public void carregarJogo() {
-        cenario = new InicioCenario(larguraTela, alturaTela);
+        cenario = new InicioCenario(larguraCena, alturaCena);
         cenario.carregar();
     }
 
@@ -68,16 +81,19 @@ public class JogoView extends View {
     }
 
     public void onTouch(MotionEvent event) {
+        float x =  event.getX() / escala.xScale;
+        float y = event.getY() / escala.yScale;
+
         if (cenario != null) {
             switch (event.getAction()) {
                 case android.view.MotionEvent.ACTION_DOWN:
-                    cenario.onToque(event.getX(), event.getY());
+                    cenario.onToque(x, y);
                     break;
                 case android.view.MotionEvent.ACTION_UP:
-                    cenario.onToqueLiberar(event.getX(), event.getY());
+                    cenario.onToqueLiberar(x, y);
                     break;
                 case android.view.MotionEvent.ACTION_MOVE:
-                    cenario.onMovimentar(event.getX(), event.getY());
+                    cenario.onMovimentar(x, y);
                     break;
             }
         }
@@ -85,7 +101,6 @@ public class JogoView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         //Inicio da atualizacao do jogo dentro do FPS definido
         if (System.currentTimeMillis() >= prxAtualizacao) {
 
@@ -96,9 +111,9 @@ public class JogoView extends View {
                     // Pressionou menuIniciar ou menuVoltar
                     cenario.descarregar();
                     if (cenario instanceof InicioCenario)
-                        cenario = new JogoCenario(larguraTela, alturaTela);
+                        cenario = new JogoCenario(larguraCena, alturaCena);
                     else if (cenario instanceof JogoCenario)
-                        cenario = new InicioCenario(larguraTela, alturaTela);
+                        cenario = new InicioCenario(larguraCena, alturaCena);
 
                     cenario.carregar();
                 }
@@ -113,6 +128,12 @@ public class JogoView extends View {
         //Hora de desenhar
         paint.setColor(Color.BLACK);
         canvas.drawRect(0, 0, larguraTela, alturaTela, paint);
+
+        canvas.scale(escala.xScale, escala.yScale);
+
+        //Debug tamaho cenario
+        //paint.setColor(Color.MAGENTA);
+        //canvas.drawRect(0, 0, larguraCena, alturaCena, paint);
 
         if (cenario == null) {
             paint.setColor(Color.WHITE);
