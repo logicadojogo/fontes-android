@@ -54,7 +54,7 @@ public class InicioCenario extends CenarioPadrao {
     }
 
     @Override
-    public void onToqueLiberar(float x, float y) {
+    public void onLiberar(float x, float y) {
         JogoView.controleTecla[JogoView.Tecla.BA.ordinal()] = true;
     }
 

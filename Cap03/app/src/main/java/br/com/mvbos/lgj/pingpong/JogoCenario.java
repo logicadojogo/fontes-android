@@ -27,6 +27,8 @@ public class JogoCenario extends CenarioPadrao {
 
     private Elemento areaPausa;
 
+    private Elemento elMovimento;
+
     private boolean reiniciarJogada;
 
     private final Texto textoPausa;
@@ -54,6 +56,9 @@ public class JogoCenario extends CenarioPadrao {
 
         areaPausa = new Elemento();
         textoPausa = new Texto(FONTE, TAMANHO_FONTE);
+
+        elMovimento = new Elemento(0, 0, 20, 20);
+        elMovimento.setAtivo(true);
     }
 
     @Override
@@ -114,8 +119,8 @@ public class JogoCenario extends CenarioPadrao {
     }
 
     @Override
-    public void onToque(float x, float y) {
-        super.onToque(x, y);
+    public void onPressionar(float x, float y) {
+        super.onPressionar(x, y);
         if (Util.colide(elToque, areaPausa)) {
             // Toque no centro pausa o jogo
             JogoView.pausado = !JogoView.pausado;
@@ -129,7 +134,7 @@ public class JogoCenario extends CenarioPadrao {
     }
 
     @Override
-    public void onToqueLiberar(float x, float y) {
+    public void onLiberar(float x, float y) {
         JogoView.liberaTeclas();
     }
 
@@ -146,10 +151,15 @@ public class JogoCenario extends CenarioPadrao {
         bola.incPx();
         bola.incPy();
 
-        if (JogoView.controleTecla[JogoView.Tecla.BA.ordinal()]) {
-            esquerda.setPy((int) movimento.y - esquerda.getAltura() / 2);
-        } else if (JogoView.controleTecla[JogoView.Tecla.BB.ordinal()]) {
-            direita.setPy((int) movimento.y - direita.getAltura() / 2);
+        for (int i = movimento.length - 1; i >= 0; --i) {
+            elMovimento.setPx((int) movimento[i].x - 5);
+            elMovimento.setPy((int) movimento[i].y);
+
+            if (Util.colideX(elMovimento, esquerda)) {
+                esquerda.setPy((int) movimento[i].y - esquerda.getAltura() / 2);
+            } else if (Util.colideX(elMovimento, direita)) {
+                direita.setPy((int) movimento[i].y - esquerda.getAltura() / 2);
+            }
         }
 
         validaPosicao(esquerda);
@@ -217,6 +227,14 @@ public class JogoCenario extends CenarioPadrao {
             textoPausa.desenha(g, p, "PAUSA", tempX, tempY);
         }
 
+        //Depurar movimentacao
+        /*
+        for (int i = movimento.length - 1; i >= 0; --i) {
+            elMovimento.setPx((int) movimento[i].x);
+            elMovimento.setPy((int) movimento[i].y);
+            elMovimento.desenha(g, p);
+        }
+        */
     }
 
     private boolean validaColisao(Bola b) {

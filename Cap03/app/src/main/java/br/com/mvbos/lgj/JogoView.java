@@ -9,17 +9,21 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import br.com.mvbos.lgj.base.CenarioPadrao;
-import br.com.mvbos.lgj.base.EscalaUtil;
 import br.com.mvbos.lgj.pingpong.InicioCenario;
 import br.com.mvbos.lgj.pingpong.JogoCenario;
 
-
 public class JogoView extends View {
-
 
     public enum Tecla {
         BA, BB
     }
+
+    public enum ModoEscala {
+        ORIGINAL, PROPORCIONAL, TELA_CHEIA
+    }
+
+    public PointF escala = new PointF(1, 1);
+    public ModoEscala modoEscala = ModoEscala.TELA_CHEIA;
 
     //Controle do loop do jogo
     private long prxAtualizacao;
@@ -31,8 +35,6 @@ public class JogoView extends View {
     private final int larguraCena;
 
     private final int alturaCena;
-
-    private EscalaUtil escala = new EscalaUtil();
 
     private CenarioPadrao cenario;
 
@@ -63,7 +65,27 @@ public class JogoView extends View {
         this.alturaCena = 320;
         this.larguraTela = larguraTela;
         this.alturaTela = alturaTela;
-        this.escala.configure(larguraTela, alturaTela, larguraCena, alturaCena);
+        modoEscala = ModoEscala.TELA_CHEIA;
+        this.configurarEscala();
+    }
+
+    public void configurarEscala() {
+        if (ModoEscala.ORIGINAL == modoEscala) {
+            // Resetar valor padrao
+            escala.x = 1;
+            escala.y = 1;
+        } else {
+            //PROPORCIONAL ou TELA_CHEIA
+            escala.x = larguraTela / (float) larguraCena;
+            escala.y = alturaTela / (float) alturaCena;
+
+            if (ModoEscala.PROPORCIONAL == modoEscala) {
+                if (escala.x > escala.y)
+                    escala.x = escala.y;
+                else
+                    escala.y = escala.x;
+            }
+        }
     }
 
     public void carregarJogo() {
@@ -81,19 +103,28 @@ public class JogoView extends View {
     }
 
     public void onTouch(MotionEvent event) {
-        float x =  event.getX() / escala.xScale;
-        float y = event.getY() / escala.yScale;
+        if (cenario == null)
+            return;
 
-        if (cenario != null) {
+        for (int i = 0; i < event.getPointerCount(); ++i) {
+            int pointerId = event.getPointerId(i);
+            int pointerIndex = event.findPointerIndex(pointerId);
+
+            //Corrige a posicao do toque
+            float x = event.getX(pointerIndex) / escala.x;
+            float y = event.getY(pointerIndex) / escala.y;
+
             switch (event.getAction()) {
-                case android.view.MotionEvent.ACTION_DOWN:
-                    cenario.onToque(x, y);
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    cenario.onPressionar(x, y);
                     break;
-                case android.view.MotionEvent.ACTION_UP:
-                    cenario.onToqueLiberar(x, y);
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                    cenario.onLiberar(x, y);
                     break;
-                case android.view.MotionEvent.ACTION_MOVE:
-                    cenario.onMovimentar(x, y);
+                case MotionEvent.ACTION_MOVE:
+                    cenario.onMovimentar(i, x, y);
                     break;
             }
         }
@@ -129,7 +160,7 @@ public class JogoView extends View {
         paint.setColor(Color.BLACK);
         canvas.drawRect(0, 0, larguraTela, alturaTela, paint);
 
-        canvas.scale(escala.xScale, escala.yScale);
+        canvas.scale(escala.x, escala.y);
 
         //Debug tamaho cenario
         //paint.setColor(Color.MAGENTA);
