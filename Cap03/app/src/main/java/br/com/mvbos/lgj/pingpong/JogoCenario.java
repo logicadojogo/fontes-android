@@ -201,8 +201,8 @@ public class JogoCenario extends CenarioPadrao {
 
         short linhaCentral = (short) (largura / 2 - 2);
 
+        p.setColor(Color.WHITE);
         for (int i = 0; i < altura; i += 20) {
-            p.setColor(Color.WHITE);
             g.drawRect(linhaCentral, i, linhaCentral + 4, i + 10, p);
         }
 

@@ -30,6 +30,7 @@ public class Elemento {
     }
 
     public void desenha(Canvas g, Paint p) {
+        p.setColor(getCor());
         g.drawRect(convertPxy(), p);
     }
 

@@ -132,18 +132,19 @@ public class JogoView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //Inicio da atualizacao do jogo dentro do FPS definido
+        // Inicio da atualizacao do jogo dentro do FPS definido
         if (System.currentTimeMillis() >= prxAtualizacao) {
 
             if (cenario != null) {
                 if (JogoView.mudarCena) {
+                    // Pressionou menuIniciar ou botão voltar do aparelho
                     JogoView.mudarCena = false;
-
-                    // Pressionou menuIniciar ou menuVoltar
+                    liberaTeclas();
                     cenario.descarregar();
+
                     if (cenario instanceof InicioCenario)
                         cenario = new JogoCenario(larguraCena, alturaCena);
-                    else if (cenario instanceof JogoCenario)
+                    else
                         cenario = new InicioCenario(larguraCena, alturaCena);
 
                     cenario.carregar();
@@ -152,7 +153,6 @@ public class JogoView extends View {
                 cenario.atualizar();
             }
 
-            //liberaTeclas();
             prxAtualizacao = System.currentTimeMillis() + FPS;
         }
 
