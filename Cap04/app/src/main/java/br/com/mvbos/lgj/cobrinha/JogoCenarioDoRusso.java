@@ -76,6 +76,16 @@ public class JogoCenarioDoRusso extends CenarioPadrao {
     }
 
     @Override
+    public void onLiberar(float x, float y) {
+        if (Util.colide(elToque, new Elemento())) {
+            JogoView.pausado = !JogoView.pausado;
+            JogoView.liberaTeclas();
+        } else {
+            JogoView.controleTecla[JogoView.Tecla.BA.ordinal()] = true;
+        }
+    }
+
+    @Override
     public void descarregar() {
         serpente = null;
         rastros = null;
@@ -85,11 +95,11 @@ public class JogoCenarioDoRusso extends CenarioPadrao {
     @Override
     public void atualizar() {
 
-        if (estado != Estado.JOGANDO) {
+        if (estado != Estado.JOGANDO || JogoView.pausado) {
             return;
         }
 
-        if (!moveu) {
+        if (!moveu && JogoView.controleTecla[JogoView.Tecla.BA.ordinal()]) {
             if (dy != 0) {
                 if (JogoView.controleTecla[JogoView.Tecla.ESQUERDA.ordinal()]) {
                     dx = -1;
@@ -115,6 +125,8 @@ public class JogoCenarioDoRusso extends CenarioPadrao {
                     moveu = true;
                 }
             }
+
+            JogoView.liberaTeclas();
         }
 
         if (temporizador >= 20) {

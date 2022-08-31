@@ -72,8 +72,8 @@ public class JogoCenario extends CenarioPadrao {
         btnPausa = new Texto(25);
         btnPausa.setAtivo(true);
         btnPausa.setCor(Color.WHITE);
-        btnPausa.setAlturaLargura(20, 20);
-        btnPausa.setPxy(largura - btnPausa.getLargura(), 5);
+        btnPausa.setAlturaLargura(20, 40);
+        btnPausa.setPxy(largura - btnPausa.getLargura(), 10);
 
         // define direcao inicial
         dy = 1;

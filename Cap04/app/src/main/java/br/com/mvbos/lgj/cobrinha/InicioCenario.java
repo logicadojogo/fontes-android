@@ -50,7 +50,7 @@ public class InicioCenario extends CenarioPadrao {
         menuIniciar.setLargura(largPadraoMenu);
         menuIniciar.setTamanhoFonte(fontePadraoMenu);
         menuIniciar.addOpcoes("Jogar");
-        menuIniciar.setLargura(60);
+        menuIniciar.setLargura(90);
 
         Util.centraliza(menuJogo, largura, altura);
         Util.centraliza(menuVelInicial, largura, altura);

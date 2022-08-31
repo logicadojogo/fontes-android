@@ -32,8 +32,6 @@ public class JogoView extends View {
     //Controle do loop do jogo
     private long prxAtualizacao;
 
-    private boolean atualizado;
-
     private final int larguraTela;
 
     private final int alturaTela;
@@ -191,7 +189,6 @@ public class JogoView extends View {
                 }
 
                 cenario.atualizar();
-                atualizado = true;
             }
 
             prxAtualizacao = System.currentTimeMillis() + FPS;

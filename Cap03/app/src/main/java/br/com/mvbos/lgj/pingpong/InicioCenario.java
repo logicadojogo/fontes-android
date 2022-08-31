@@ -39,7 +39,7 @@ public class InicioCenario extends CenarioPadrao {
         menuIniciar = new Menu("");
         menuIniciar.setCor(Color.WHITE);
         menuIniciar.addOpcoes("Jogar");
-        menuIniciar.setLargura(60);
+        menuIniciar.setLargura(90);
 
         Util.centraliza(bola, largura, altura);
         Util.centraliza(menuModo, largura, altura);
