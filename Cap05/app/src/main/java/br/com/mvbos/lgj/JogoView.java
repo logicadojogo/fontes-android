@@ -48,7 +48,7 @@ public class JogoView extends View {
 
     public static int nivel;
 
-    public static int velocidade;
+    public static int opcaoAudio;
 
     public static boolean pausado;
 
@@ -150,23 +150,19 @@ public class JogoView extends View {
         }
     }
 
-    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1) {
-        if (movimentoNaoLido()) {
-            return true;
-        }
+    public void onLongTouch(MotionEvent event) {
+        //Corrige a posicao do toque
+        float x = event.getX() / escala.x;
+        float y = event.getY() / escala.y;
+        cenario.onPressionarLongo(x, y);
+    }
 
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1) {
         if (motionEvent.getX() - motionEvent1.getX() > SCROLL_PRECISION) {
             JogoView.controleTecla[Tecla.ESQUERDA.ordinal()] = true;
         } else if (motionEvent1.getX() - motionEvent.getX() > SCROLL_PRECISION) {
             JogoView.controleTecla[Tecla.DIREITA.ordinal()] = true;
         }
-
-        if (motionEvent.getY() - motionEvent1.getY() > SCROLL_PRECISION) {
-            JogoView.controleTecla[Tecla.CIMA.ordinal()] = true;
-        } else if (motionEvent1.getY() - motionEvent.getY() > SCROLL_PRECISION) {
-            JogoView.controleTecla[Tecla.BAIXO.ordinal()] = true;
-        }
-
         return true;
     }
 

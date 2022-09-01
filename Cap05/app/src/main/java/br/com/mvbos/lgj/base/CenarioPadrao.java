@@ -38,6 +38,11 @@ public abstract class CenarioPadrao {
         elToque.setPy((int) y);
     }
 
+    public void onPressionarLongo(float x, float y) {
+        elToque.setPx((int) x);
+        elToque.setPy((int) y);
+    }
+
     public void onLiberar(float x, float y) {
         elToque.setPx((int) x);
         elToque.setPy((int) y);
@@ -50,4 +55,5 @@ public abstract class CenarioPadrao {
         movimento[index].x = x;
         movimento[index].y = y;
     }
+
 }

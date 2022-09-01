@@ -1,15 +1,21 @@
 package br.com.mvbos.lgj;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 public class MainActivity extends Activity implements
         GestureDetector.OnGestureListener {
@@ -32,19 +38,46 @@ public class MainActivity extends Activity implements
         // Manter tela ligada
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        hideSystemBars();
 
         mDetector = new GestureDetectorCompat(this, this);
 
-        view = new JogoView(this, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        Point screenSize = getScreenSize();
+        view = new JogoView(this, screenSize.x, screenSize.y);
         setContentView(view);
         view.carregarJogo();
     }
 
+    private Point getScreenSize() {
+        Point screenSize = new Point();
+        WindowManager wm = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            display.getRealSize(screenSize);
+        } else {
+            display.getSize(screenSize);
+        }
+
+        return screenSize;
+    }
+
+    private void hideSystemBars() {
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (windowInsetsController == null) {
+            return;
+        }
+        // Configure the behavior of the hidden system bars
+        windowInsetsController.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        );
+        // Hide both the status bar and the navigation bar
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        view.onTouch(event);
         if (this.mDetector.onTouchEvent(event)) {
             return true;
         }
@@ -61,6 +94,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public boolean onDown(MotionEvent motionEvent) {
+        view.onTouch(motionEvent);
         return true;
     }
 
@@ -70,7 +104,8 @@ public class MainActivity extends Activity implements
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        return false;
+        view.onTouch(motionEvent);
+        return true;
     }
 
     @Override
@@ -80,6 +115,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
+        view.onLongTouch(motionEvent);
     }
 
     @Override

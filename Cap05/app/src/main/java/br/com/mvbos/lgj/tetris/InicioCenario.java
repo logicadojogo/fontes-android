@@ -16,35 +16,36 @@ public class InicioCenario extends CenarioPadrao {
     }
 
     private Menu menuJogo;
+    private Menu menuAudio;
     private Menu menuIniciar;
 
     @Override
     public void carregar() {
-        int largPadraoMenu = 190;
-        int fontePadraoMenu = 25;
         int espacamentoMenu = 18;
 
         menuJogo = new Menu("Nível");
-        menuJogo.setAtivo(true);
-        menuJogo.setCor(Color.WHITE);
         menuJogo.setSelecionado(true);
-        menuJogo.setLargura(largPadraoMenu);
-        menuJogo.setTamanhoFonte(fontePadraoMenu);
-        menuJogo.addOpcoes("1", "2", "3", "4", "5", "6", "7", "8", "9");
+        configurarMenu(menuJogo, "1", "2", "3", "4", "5", "6", "7", "8", "9");
+
+        menuAudio = new Menu("Áudio");
+        configurarMenu(menuAudio, "Ligado", "Efeitos", "Desligado");
+        menuAudio.setLargura(menuAudio.getLargura() * 2);
 
         menuIniciar = new Menu(null);
-        menuIniciar.setAtivo(true);
-        menuIniciar.setCor(Color.WHITE);
-        menuIniciar.setLargura(largPadraoMenu);
-        menuIniciar.setTamanhoFonte(fontePadraoMenu);
-        menuIniciar.addOpcoes("Jogar");
-        menuIniciar.setLargura(90);
-
-        Util.centraliza(menuJogo, largura, altura);
-        Util.centraliza(menuIniciar, largura, altura);
+        configurarMenu(menuIniciar, "Jogar");
 
         menuJogo.setPy(menuJogo.getPy() + menuJogo.getAltura());
-        menuIniciar.setPy(menuJogo.getPy() + menuJogo.getAltura() + espacamentoMenu);
+        menuAudio.setPy(menuJogo.getPy() + menuJogo.getAltura() + espacamentoMenu);
+        menuIniciar.setPy(menuAudio.getPy() + menuAudio.getAltura() + espacamentoMenu);
+    }
+
+    private void configurarMenu(Menu menu, String... opcoes) {
+        menu.setAtivo(true);
+        menu.setCor(Color.WHITE);
+        menu.setLargura(110);
+        menu.setTamanhoFonte(25);
+        menu.addOpcoes(opcoes);
+        Util.centraliza(menu, super.largura, super.altura);
     }
 
     @Override
@@ -55,6 +56,7 @@ public class InicioCenario extends CenarioPadrao {
     @Override
     public void descarregar() {
         JogoView.nivel = menuJogo.getOpcaoId() + 1;
+        JogoView.opcaoAudio = menuAudio.getOpcaoId() + 1;
     }
 
     @Override
@@ -62,8 +64,16 @@ public class InicioCenario extends CenarioPadrao {
         if (JogoView.controleTecla[JogoView.Tecla.BA.ordinal()]) {
 
             if (Util.colide(elToque, menuJogo)) {
+                menuAudio.setSelecionado(false);
+
                 menuJogo.setSelecionado(true);
                 menuJogo.trocaOpcao(false);
+
+            } else if (Util.colide(elToque, menuAudio)) {
+                menuJogo.setSelecionado(false);
+
+                menuAudio.setSelecionado(true);
+                menuAudio.trocaOpcao(false);
 
             } else if (Util.colide(elToque, menuIniciar)) {
                 JogoView.mudarCena = true;
@@ -76,6 +86,7 @@ public class InicioCenario extends CenarioPadrao {
     @Override
     public void desenhar(Canvas g, Paint p) {
         menuJogo.desenha(g, p);
+        menuAudio.desenha(g, p);
         menuIniciar.desenha(g, p);
     }
 

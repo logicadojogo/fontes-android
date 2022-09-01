@@ -34,7 +34,9 @@ public class JogoCenario extends CenarioPadrao {
 
     private int temporizador = 0;
 
-    private Texto texto = new Texto(20);
+    private Texto texto;
+    private Texto textoPausa;
+    private Texto textoPlacar;
 
     private Random rand = new Random();
 
@@ -49,13 +51,14 @@ public class JogoCenario extends CenarioPadrao {
 
     private boolean animar;
     private boolean depurar;
+    private boolean pressionado;
 
     private Estado estado = Estado.JOGANDO;
 
     // Efeitos sonoros
-    private SomUtil som = JogoView.getSomUtil();
-    private int somAdicionarPeca;
     private int somMarcarLinha;
+    private int somAdicionarPeca;
+    private SomUtil som = JogoView.getSomUtil();
 
     // Musica
     private Tocador tocador = JogoView.getTocador();
@@ -76,11 +79,30 @@ public class JogoCenario extends CenarioPadrao {
             }
         }
 
+        texto = new Texto(25);
+        texto.setCor(Color.RED);
+
+        textoPlacar = new Texto(20);
+        textoPlacar.setCor(Color.WHITE);
+
+        textoPausa = new Texto(40);
+        textoPausa.setCor(Color.WHITE);
+
+        /*
+         * Opcoes de audio
+         * 1 = ligado
+         * 2 = efeitos
+         * 3 = desligado
+         * */
+
         somAdicionarPeca = som.carregar(R.raw.adiciona_peca);
         somMarcarLinha = som.carregar(R.raw._109662_grunz_success);
 
-        tocador.carregar("sounds/piano_quebrado.wav");
-        tocador.tocar(1, 1, true);
+        if (JogoView.opcaoAudio == 1) {
+            tocador.carregar("sounds/piano_quebrado.wav");
+            tocador.tocar(1, 1, true);
+        }
+
         adicionaPeca();
     }
 
@@ -111,7 +133,7 @@ public class JogoCenario extends CenarioPadrao {
         if (JogoView.controleTecla[JogoView.Tecla.CIMA.ordinal()]) {
             girarReposicionarPeca(false);
 
-        } else if (JogoView.controleTecla[JogoView.Tecla.BAIXO.ordinal()]) {
+        } else if (pressionado) {
             if (validaMovimento(peca, ppx, ppy + 1))
                 ppy++;
         }
@@ -137,7 +159,8 @@ public class JogoCenario extends CenarioPadrao {
 
             if (colidiu(ppx, ppy + 1)) {
 
-                som.tocar(somAdicionarPeca, 1, 1, 0);
+                pressionado = false;
+                tocarSom(somAdicionarPeca);
 
                 if (!parouForaDaGrade()) {
                     adicionarPecaNaGrade();
@@ -157,10 +180,31 @@ public class JogoCenario extends CenarioPadrao {
 
         } else
             temporizador += nivel;
-
     }
 
-    public void adicionaPeca() {
+    @Override
+    public void onPressionarLongo(float x, float y) {
+        super.onPressionarLongo(x, y);
+        pressionado = true;
+    }
+
+    @Override
+    public void onPressionar(float x, float y) {
+        super.onPressionar(x, y);
+        pressionado = false;
+    }
+
+    @Override
+    public void onLiberar(float x, float y) {
+        JogoView.controleTecla[JogoView.Tecla.CIMA.ordinal()] = true;
+    }
+
+    private void tocarSom(int idSom) {
+        if (JogoView.opcaoAudio < 3)
+            som.tocar(idSom, 1, 1, 0);
+    }
+
+    private void adicionaPeca() {
 
         ppy = -2;
         ppx = grade.length / 2 - 1;
@@ -179,7 +223,6 @@ public class JogoCenario extends CenarioPadrao {
 
         peca = Peca.PECAS[idPeca];
         corPeca = Peca.Cores[idPeca];
-
     }
 
     private void adicionarPecaNaGrade() {
@@ -343,7 +386,7 @@ public class JogoCenario extends CenarioPadrao {
             }
         }
 
-        som.tocar(somMarcarLinha, 1, 1, 0);
+        tocarSom(somMarcarLinha);
     }
 
     protected void girarPeca(boolean sentidoHorario) {
@@ -472,31 +515,40 @@ public class JogoCenario extends CenarioPadrao {
         int[][] prxPeca = Peca.PECAS[idPrxPeca];
         p.setColor(Peca.Cores[idPrxPeca]);
 
+        int x, y;
+
         for (int col = 0; col < prxPeca.length; col++) {
             for (int lin = 0; lin < prxPeca[col].length; lin++) {
                 if (prxPeca[lin][col] == 0)
                     continue;
 
-                int x = col * miniatura + ESPACAMENTO;
-                int y = lin * miniatura + ESPACAMENTO;
+                x = col * miniatura + ESPACAMENTO;
+                y = lin * miniatura + ESPACAMENTO;
 
                 g.drawRect(x, y, x + miniatura - ESPACAMENTO, y + miniatura - ESPACAMENTO, p);
-
             }
         }
 
-        texto.setCor(Color.WHITE);
-        texto.desenha(g, p, "Level " + nivel + " - " + linhasFeistas, largura / 2 - 20, 20);
-        texto.desenha(g, p, String.valueOf(pontos), largura - 50, 20);
+        textoPlacar.desenha(g, p, "Level " + nivel + " - " + linhasFeistas, largura / 2 - 20, 20);
+        textoPlacar.desenha(g, p, String.valueOf(pontos), largura - 50, 20);
+
+        int tempY, tempX = 0;
 
         if (estado != Estado.JOGANDO) {
-            texto.setCor(Color.WHITE);
+            tempY = altura / 2 + texto.getTamanhoFonte() / 2;
+            tempX = largura / 2 - texto.getTamanhoFonte() - texto.getTamanhoFonte() / 2;
 
             if (estado == Estado.GANHOU)
-                texto.desenha(g, p, "Finalmente!", 180, 180);
+                texto.desenha(g, p, "Finalmente!", tempX, tempY);
             else
-                texto.desenha(g, p, "Deu ruim!", 180, 180);
+                texto.desenha(g, p, "Deu ruim!", tempX, tempY);
+        }
+
+        if (JogoView.pausado) {
+            tempY = altura / 2 + textoPausa.getTamanhoFonte() / 2;
+            tempX = largura / 2 - textoPausa.getTamanhoFonte() - textoPausa.getTamanhoFonte() / 2;
+
+            textoPausa.desenha(g, p, "PAUSA", tempX, tempY);
         }
     }
-
 }
