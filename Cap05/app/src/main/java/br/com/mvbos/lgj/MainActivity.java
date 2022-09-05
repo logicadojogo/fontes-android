@@ -20,7 +20,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 public class MainActivity extends Activity implements
         GestureDetector.OnGestureListener {
 
-
     private JogoView view;
     private GestureDetectorCompat mDetector;
 

@@ -27,7 +27,6 @@ public class JogoView extends View {
     }
 
     public PointF escala = new PointF(1, 1);
-    public ModoEscala modoEscala = ModoEscala.TELA_CHEIA;
 
     //Controle do loop do jogo
     private long prxAtualizacao;
@@ -58,7 +57,6 @@ public class JogoView extends View {
 
     private static SomUtil somUtil;
 
-
     public static SomUtil getSomUtil() {
         return somUtil;
     }
@@ -82,14 +80,13 @@ public class JogoView extends View {
         this.alturaCena = 640;
         this.larguraTela = larguraTela;
         this.alturaTela = alturaTela;
-        modoEscala = ModoEscala.TELA_CHEIA;
-        this.configurarEscala();
+        this.configurarEscala(ModoEscala.TELA_CHEIA);
 
         somUtil = new SomUtil(context);
         tocador = new Tocador(context);
     }
 
-    public void configurarEscala() {
+    public void configurarEscala(ModoEscala modoEscala) {
         if (ModoEscala.ORIGINAL == modoEscala) {
             // Resetar valor padrao
             escala.x = 1;
@@ -164,13 +161,6 @@ public class JogoView extends View {
             JogoView.controleTecla[Tecla.DIREITA.ordinal()] = true;
         }
         return true;
-    }
-
-    private boolean movimentoNaoLido() {
-        return JogoView.controleTecla[Tecla.ESQUERDA.ordinal()] ||
-                JogoView.controleTecla[Tecla.DIREITA.ordinal()] ||
-                JogoView.controleTecla[Tecla.CIMA.ordinal()] ||
-                JogoView.controleTecla[Tecla.BAIXO.ordinal()];
     }
 
     @Override
