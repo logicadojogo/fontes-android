@@ -79,12 +79,11 @@ public class Legume extends Elemento {
             g.drawBitmap(sprite, origemImg, destinoImg, p);
         }
 
-        largMoldura = olhos.getWidth();
-        altMoldura = olhos.getHeight() / 4;
-        altImg = altMoldura * lnOlhos;
+        int altOlho = olhos.getHeight() / 4;
+        int direcaoOlho = altOlho * lnOlhos;
 
-        destinoImg.set(pX, pY, pX + largMoldura, pY + altMoldura);
-        origemImg.set(0, altImg, largImg + largMoldura, altImg + altMoldura);
+        origemImg.set(0, direcaoOlho, olhos.getWidth(), direcaoOlho + altOlho);
+        destinoImg.set(pX, pY, pX + olhos.getWidth(), pY + altOlho);
         g.drawBitmap(olhos, origemImg, destinoImg, p);
     }
 
